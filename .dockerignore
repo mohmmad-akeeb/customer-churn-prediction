@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+
+# Documentation (optional - include if you want them in image)
+# README.md
+# DEPLOYMENT.md
+# DEPLOYMENT.md
+# CHECKLIST.md
+
+# Testing
+test_model.py
+inspect_model.py
+*.log
+
+# Deployment configs (not needed in container)
+Procfile
+runtime.txt
+render.yaml
+vercel.json
+deploy.sh
+
+# Temporary files
+*.tmp
+*.bak
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store

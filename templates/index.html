@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1e1e1e;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #7c3aed;
+            --accent-pink: #ff006e;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f09300 100%);
+            --accent-gradient-2: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffd60a;
+            --border: #2a2a2a;
+            --border-light: #404040;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 30px 60px rgba(0, 0, 0, 0.6);
+            --glow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(250, 112, 154, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(102, 126, 234, 0.03) 2px, rgba(102, 126, 234, 0.03) 4px);
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: var(--shadow-lg), 0 0 0 1px rgba(102, 126, 234, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            background: var(--accent-gradient);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>'),
+                radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            opacity: 0.4;
+            animation: headerPulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes headerPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.6; }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 400;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-container {
+            padding: 50px;
+            background: var(--bg-secondary);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .entertainment-section {
+            grid-column: span 3;
+        }
+        
+        .entertainment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        
+        .form-section {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .form-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .form-section:hover::after {
+            opacity: 1;
+        }
+        
+        .form-section:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 0 20px 20px 0;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+        }
+        
+        .form-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            font-size: 1.4em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+        
+        input:hover, select:hover {
+            border-color: var(--border-light);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 0 20px rgba(102, 126, 234, 0.1);
+            background: var(--bg-secondary);
+            transform: translateY(-2px);
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        select option {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        /* Radio Button Styles */
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        
+        .radio-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .radio-container input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .radio-checkmark {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            background: var(--bg-primary);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-right: 12px;
+        }
+        
+        .radio-checkmark::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+        
+        .radio-container input[type="checkbox"]:checked + .radio-checkmark {
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .radio-container input[type="checkbox"]:checked + .radio-checkmark::after {
+            transform: translate(-50%, -50%) scale(1);
+            animation: checkPop 0.3s ease;
+        }
+        
+        @keyframes checkPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .radio-container:hover .radio-checkmark {
+            border-color: rgba(102, 126, 234, 0.6);
+            transform: scale(1.1);
+        }
+        
+        .radio-label {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            font-weight: 500;
+            user-select: none;
+        }
+        
+        .radio-container input[type="checkbox"]:checked ~ .radio-label {
+            color: var(--accent-primary);
+        }
+        
+        .btn {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 22px 40px;
+            font-size: 19px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 15px;
+            padding: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5), var(--glow);
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(-2px) scale(1);
+        }
+        
+        .result {
+            margin-bottom: 40px;
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 600;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            animation: resultSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes resultSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.15;
+            background: currentColor;
+            animation: resultPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes resultPulse {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.25; }
+        }
+        
+        .result::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, currentColor 0%, transparent 70%);
+            opacity: 0.05;
+            animation: resultRotate 10s linear infinite;
+        }
+        
+        @keyframes resultRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .result-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .result.success {
+            background: rgba(0, 255, 136, 0.08);
+            color: var(--success);
+            border-color: var(--success);
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.2), 0 0 40px rgba(0, 255, 136, 0.1);
+        }
+        
+        .result.danger {
+            background: rgba(255, 51, 102, 0.08);
+            color: var(--danger);
+            border-color: var(--danger);
+            box-shadow: 0 20px 60px rgba(255, 51, 102, 0.2), 0 0 40px rgba(255, 51, 102, 0.1);
+        }
+        
+        .result h3 {
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        .result p {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        
+        .result p strong {
+            font-size: 1.3em;
+            display: block;
+            margin: 10px 0;
+            text-shadow: 0 0 15px currentColor;
+        }
+        
+        .confidence-main {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        
+        .probability-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .prob-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 180px;
+            transition: all 0.3s ease;
+        }
+        
+        .prob-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .prob-label {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .prob-value {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: var(--text-primary);
+            text-shadow: 0 0 25px currentColor;
+            filter: brightness(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .probability-breakdown {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .prob-item {
+                width: 100%;
+            }
+        }
+        
+        .error {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--danger);
+            border: 2px solid var(--danger);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.2);
+            animation: errorShake 0.5s ease-in-out;
+        }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            margin-top: 30px;
+        }
+        
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .spinner::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--accent-primary);
+            border-right-color: var(--accent-primary);
+            animation: spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            font-size: 1.1em;
+            font-weight: 500;
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .entertainment-section {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .entertainment-section {
+                grid-column: span 1;
+            }
+            
+            .entertainment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .form-container {
+                padding: 30px 25px;
+            }
+            
+            .form-section {
+                padding: 25px 20px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .form-container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🤖 Customer Churn Prediction</h1>
+                <p>Advanced ML-powered churn analysis for strategic customer retention</p>
+            </div>
+        </div>
+        
+        <div class="form-container">
+            {% if error %}
+            <div class="error">
+                <strong>⚠️ Error:</strong> {{ error }}
+            </div>
+            {% endif %}
+            
+            {% if result %}
+            <div class="result {{ result.status }}">
+                <div class="result-content">
+                    <h3>🎯 Prediction Result</h3>
+                    <p><strong>Customer {{ result.prediction }}</strong></p>
+                    <p class="confidence-main">Prediction Confidence: {{ result.confidence }}</p>
+                    <div class="probability-breakdown">
+                        <div class="prob-item">
+                            <span class="prob-label">🔴 Churn Risk:</span>
+                            <span class="prob-value">{{ result.churn_probability }}</span>
+                        </div>
+                        <div class="prob-item">
+                            <span class="prob-label">🟢 Retention:</span>
+                            <span class="prob-value">{{ result.no_churn_probability }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing customer data...</p>
+            </div>
+            
+            <form action="/predict" method="POST" id="predictionForm">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <h3>👤 Customer Demographics</h3>
+                        
+                        <div class="form-group">
+                            <label>Senior Citizen:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="senior_citizen_yes" name="senior_citizen" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Under 30:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="under_30_yes" name="under_30" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Dependents:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="dependents_yes" name="dependents" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Referred a Friend:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="referred_a_friend_yes" name="referred_a_friend" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Satisfaction Score (1-5):</label>
+                            <input type="number" name="satisfaction_score" min="1" max="5" value="3" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>📊 Account & Billing</h3>
+                        
+                        <div class="form-group">
+                            <label>Tenure (Months):</label>
+                            <input type="number" name="tenure_in_months" min="0" step="1" value="12" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Monthly Charge ($):</label>
+                            <input type="number" name="monthly_charge" min="0" step="0.01" value="70.00" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Avg Monthly GB Download:</label>
+                            <input type="number" name="avg_monthly_gb_download" min="0" step="0.1" value="20" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Contract:</label>
+                            <select name="contract" required>
+                                <option value="Month-to-Month">Month-to-Month</option>
+                                <option value="One Year">One Year</option>
+                                <option value="Two Year">Two Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Payment Method:</label>
+                            <select name="payment_method" required>
+                                <option value="Electronic Check">Electronic Check</option>
+                                <option value="Mailed Check">Mailed Check</option>
+                                <option value="Credit Card (automatic)">Credit Card (automatic)</option>
+                                <option value="Bank Transfer (automatic)">Bank Transfer (automatic)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Paperless Billing:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="paperless_billing_yes" name="paperless_billing" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>📡 Services & Features</h3>
+                        
+                        <div class="form-group">
+                            <label>Current Offer:</label>
+                            <select name="offer" required>
+                                <option value="None">None</option>
+                                <option value="Offer A">Offer A</option>
+                                <option value="Offer B">Offer B</option>
+                                <option value="Offer C">Offer C</option>
+                                <option value="Offer D">Offer D</option>
+                                <option value="Offer E">Offer E</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Internet Type:</label>
+                            <select name="internet_type" required>
+                                <option value="None">None</option>
+                                <option value="DSL">DSL</option>
+                                <option value="Fiber Optic">Fiber Optic</option>
+                                <option value="Cable">Cable</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Premium Tech Support:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="premium_tech_support_yes" name="premium_tech_support" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Unlimited Data:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="unlimited_data_yes" name="unlimited_data" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Multiple Lines:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="multiple_lines_yes" name="multiple_lines" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Online Backup:</label>
+                            <div class="radio-group">
+                                <div class="radio-container">
+                                    <input type="checkbox" id="online_backup_yes" name="online_backup" value="Yes">
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section entertainment-section">
+                        <h3>🎬 Entertainment Services</h3>
+                        
+                        <div class="entertainment-grid">
+                            <div class="form-group">
+                                <label>Device Protection Plan:</label>
+                                <div class="radio-group">
+                                    <div class="radio-container">
+                                        <input type="checkbox" id="device_protection_plan_yes" name="device_protection_plan" value="Yes">
+                                        <span class="radio-checkmark"></span>
+                                        <span class="radio-label">Yes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Streaming TV:</label>
+                                <div class="radio-group">
+                                    <div class="radio-container">
+                                        <input type="checkbox" id="streaming_tv_yes" name="streaming_tv" value="Yes">
+                                        <span class="radio-checkmark"></span>
+                                        <span class="radio-label">Yes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Streaming Movies:</label>
+                                <div class="radio-group">
+                                    <div class="radio-container">
+                                        <input type="checkbox" id="streaming_movies_yes" name="streaming_movies" value="Yes">
+                                        <span class="radio-checkmark"></span>
+                                        <span class="radio-label">Yes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Streaming Music:</label>
+                                <div class="radio-group">
+                                    <div class="radio-container">
+                                        <input type="checkbox" id="streaming_music_yes" name="streaming_music" value="Yes">
+                                        <span class="radio-checkmark"></span>
+                                        <span class="radio-label">Yes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">🔮 Analyze Customer Risk</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Add loading animation on form submit
+        document.getElementById('predictionForm').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.btn').style.display = 'none';
+            
+            // Scroll to loading indicator
+            setTimeout(() => {
+                document.getElementById('loading').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 100);
+        });
+        
+        // Smooth scroll to result at top when page loads with result
+        {% if result %}
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const resultElement = document.querySelector('.result');
+                if (resultElement) {
+                    // Scroll to top to show the result
+                    window.scrollTo({ 
+                        top: 0, 
+                        behavior: 'smooth' 
+                    });
+                }
+            }, 300);
+        });
+        {% endif %}
+        
+        // Add input validation feedback with enhanced styling
+        const inputs = document.querySelectorAll('input[type="number"], select');
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.checkValidity()) {
+                    this.style.borderColor = 'var(--success)';
+                    this.style.boxShadow = '0 0 0 3px rgba(0, 255, 136, 0.1)';
+                } else {
+                    this.style.borderColor = 'var(--danger)';
+                    this.style.boxShadow = '0 0 0 3px rgba(255, 51, 102, 0.1)';
+                }
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.style.borderColor = 'var(--border)';
+                    this.style.boxShadow = 'none';
+                }
+            });
+        });
+        
+        // Handle checkbox behavior - checked = Yes, unchecked = No (handled by backend)
+        const checkboxContainers = document.querySelectorAll('.radio-container');
+        
+        checkboxContainers.forEach(container => {
+            const checkbox = container.querySelector('input[type="checkbox"]');
+            
+            // Make the entire container clickable
+            container.addEventListener('click', function(e) {
+                // Don't prevent default - let the checkbox handle it naturally
+                if (e.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
+        // Add mouse tracking for form sections
+        const formSections = document.querySelectorAll('.form-section');
+        formSections.forEach(section => {
+            section.addEventListener('mousemove', function(e) {
+                const rect = section.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                section.style.setProperty('--mouse-x', x + '%');
+                section.style.setProperty('--mouse-y', y + '%');
+            });
+        });
+        
+        // Add subtle parallax effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            const scrolled = window.pageYOffset;
+            header.style.transform = `translateY(${scrolled * 0.3}px)`;
+        });
+    </script>
+</body>
+</html>
