@@ -6,6 +6,8 @@ A modern, dark-themed web application for predicting customer churn using machin
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.2-orange.svg)
 
+![App Screenshot](app_screenshot.png)
+
 ## ✨ Features
 
 - 🎯 **Accurate Predictions** - Random Forest model with probability estimates
