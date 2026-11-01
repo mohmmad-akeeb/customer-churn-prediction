@@ -1,251 +1,375 @@
-# 🤖 Customer Churn Prediction Web App
+# ChurnSight - Customer Churn Prediction
 
-A modern, dark-themed web application for predicting customer churn using machine learning. Built with FastAPI and powered by a Random Forest classifier.
+![CI](https://github.com/mohmmad-akeeb/customer-churn-prediction/actions/workflows/ci.yml/badge.svg?branch=main)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5+-orange)
+![Tests](https://img.shields.io/badge/tests-53%20passed-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-![Python](https://img.shields.io/badge/python-3.11-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.2-orange.svg)
+
+A production-ready web application that predicts whether a telecom customer will churn, backed by a Random Forest classifier trained on the IBM Telco dataset (7,043 customers, 21 features). Ships with an interactive EDA dashboard that visualises the key findings from the exploratory analysis.
+
+**Live demo:** [churnsight.onrender.com](https://churnsight.onrender.com)
 
 ![App Screenshot](app_screenshot.png)
 
-## ✨ Features
+---
 
-- 🎯 **Accurate Predictions** - Random Forest model with probability estimates
-- 🌙 **Modern Dark UI** - Beautiful, responsive interface with animations
-- 📊 **Detailed Analytics** - Shows both churn risk and retention probability
-- 🚀 **Fast API** - Built with FastAPI for high performance
-- 📱 **Mobile Friendly** - Responsive design works on all devices
-- 🔒 **Type Safe** - Full type validation with Pydantic
+## What's inside
 
-### Prediction Form
-Clean, organized form with sections for:
-- 👤 Customer Demographics
-- 📊 Account & Billing
-- 📡 Services & Features
-- 🎬 Entertainment Services
-
-### Results Display
-Shows comprehensive prediction results:
-- Final prediction (Will Churn / Will Not Churn)
-- Prediction confidence percentage
-- Churn risk breakdown
-- Retention probability
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.11+
-- pip
-
-### Installation
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/yourusername/churn-prediction.git
-cd churn-prediction
-```
-
-2. **Create virtual environment**
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-4. **Run the application**
-```bash
-python run.py
-```
-
-5. **Open your browser**
-```
-http://localhost:8000
-```
-
-## 📁 Project Structure
-
-```
-churn-prediction/
-├── main.py                      # FastAPI application
-├── run.py                       # Simple run script
-├── best_model_pipeline.pkl      # Trained ML model (2.3MB)
-├── requirements.txt             # Python dependencies
-├── templates/
-│   └── index.html              # Web interface
-├── test_model.py               # Model testing script
-├── inspect_model.py            # Model inspection utility
-├── .env                        # Environment variables
-├── .gitignore                  # Git ignore rules
-├── Procfile                    # Heroku/Render deployment
-├── runtime.txt                 # Python version
-├── render.yaml                 # Render.com config
-├── vercel.json                 # Vercel config
-├── DEPLOYMENT.md               # Deployment guide
-└── README.md                   # This file
-```
-
-## 🎮 Usage
-
-### Web Interface
-
-1. Fill in customer information across four sections
-2. Click "🔮 Analyze Customer Risk"
-3. View prediction results at the top of the page
-
-### API Endpoints
-
-#### Health Check
-```bash
-GET /health
-```
-
-#### Web Form
-```bash
-GET /
-```
-
-#### Prediction (Form)
-```bash
-POST /predict
-```
-
-#### Prediction (API)
-```bash
-POST /api/predict
-Content-Type: application/json
-
-{
-  "senior_citizen": "No",
-  "under_30": "Yes",
-  "dependents": "No",
-  "tenure_in_months": 24.0,
-  "monthly_charge": 85.50,
-  ...
-}
-```
-
-### API Documentation
-
-FastAPI provides automatic interactive documentation:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-## 🧪 Testing
-
-### Test the Model
-```bash
-python test_model.py
-```
-
-### Inspect Model Details
-```bash
-python inspect_model.py
-```
-
-## 🔧 Configuration
-
-Edit `.env` file to configure:
-
-```env
-HOST=0.0.0.0
-PORT=8000
-DEBUG=False
-MODEL_PATH=best_model_pipeline.pkl
-```
-
-## 📊 Model Information
-
-- **Algorithm**: Random Forest Classifier
-- **Features**: 21 customer attributes
-- **Classes**: Binary (Churn / No Churn)
-- **Performance**: Provides probability estimates (not just binary predictions)
-
-### Input Features
-
-**Demographics:**
-- Senior Citizen, Under 30, Dependents, Referred a Friend
-
-**Account & Billing:**
-- Tenure, Monthly Charge, Avg Monthly GB Download
-- Contract Type, Payment Method, Paperless Billing
-
-**Services:**
-- Internet Type, Current Offer
-- Premium Tech Support, Unlimited Data, Multiple Lines, Online Backup
-
-**Entertainment:**
-- Device Protection Plan, Streaming TV, Movies, Music
-
-**Satisfaction:**
-- Satisfaction Score (1-5)
-
-## 🚀 Deployment
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
-
-### Quick Deploy Options
-
-**Render.com (Recommended)**
-```bash
-# Push to GitHub, then connect on Render.com
-```
-
-**Railway.app**
-```bash
-railway up
-```
-
-**Fly.io**
-```bash
-fly launch
-fly deploy
-```
-
-## 🛠️ Tech Stack
-
-- **Backend**: FastAPI 0.104.1
-- **ML Framework**: scikit-learn 1.5.2
-- **Server**: Uvicorn
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Styling**: Custom CSS with dark theme
-- **Model**: Random Forest (100 estimators)
-
-## 📈 Performance
-
-- **Model Size**: 2.3 MB
-- **Prediction Time**: < 100ms
-- **Memory Usage**: ~150 MB
-- **Startup Time**: ~2 seconds
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 👨‍💻 Author
-
-Mohmmad Akeeb - [GitHub](https://github.com/mohmmad-akeeb)
-
-## 🙏 Acknowledgments
-
-- FastAPI for the amazing web framework
-- scikit-learn for ML capabilities
-- The open-source community
-
-## 📞 Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check the [DEPLOYMENT.md](DEPLOYMENT.md) guide
-- Review FastAPI docs: https://fastapi.tiangolo.com
+- **Prediction form** — fill in a customer profile and get a churn probability in real time
+- **EDA dashboard** — 10 interactive Chart.js charts covering every major insight from the analysis
+- **REST API** — JSON endpoint (`POST /api/predict`) for programmatic access with full Swagger docs
+- **53 tests** — unit and integration coverage across schemas, service layer, and all HTTP routes
+- **CI/CD pipeline** — GitHub Actions: lint, test (Python 3.11 and 3.12), Docker build, Render deploy
 
 ---
 
-Made with ❤️ and ☕
+## Exploratory Data Analysis
+
+Full notebook: `notebooks/EDA_of_Customer_Churn_Prediction.ipynb`
+
+Interactive charts: run the app and visit `/eda`
+
+### Dataset overview
+
+| Metric | Value |
+|---|---|
+| Total customers | 7,043 |
+| Churned | 1,869 (26.5%) |
+| Retained | 5,174 (73.5%) |
+| Features | 21 |
+
+### Key findings
+
+**Contract type is the strongest predictor.**
+Month-to-month customers churn at 42.7%, more than 15× the rate of two-year subscribers (2.8%).
+
+**New customers are the highest-risk cohort.**
+Customers in their first 12 months account for 33% of all churn. Churn drops sharply after 24 months.
+
+**Fiber Optic subscribers churn at 41.9%**, twice the rate of DSL (19.0%).
+
+**Electronic check payment is a churn signal.**
+45.3% of electronic check users churn vs 15–17% for automatic payment methods.
+
+**Monthly charge scales almost linearly with churn.**
+Customers paying over $90/month churn at 45%+. Those under $30/month churn at just 5%.
+
+**Offer B cuts churn to 2.3%.** Customers with no active offer churn at 53%.
+
+**Senior citizens (41.7%) churn at nearly twice the general population rate (23.7%).**
+
+### EDA plots
+
+#### Contract type vs Churn
+The single most predictive categorical feature. Month-to-month subscribers dominate churn volume.
+
+![Contract vs Churn](docs/images/eda_contract_churn.png)
+
+#### Monthly charge distribution
+Churned customers cluster heavily in the $70–$100 band, while retained customers are spread more evenly at lower prices.
+
+![Monthly Charge Distribution](docs/images/eda_monthly_charge_dist.png)
+
+#### Tenure distribution
+Clear separation: churned customers leave early (median ~10 months); retained customers trend toward 3–4 year tenures.
+
+![Tenure Distribution](docs/images/eda_tenure_dist.png)
+
+#### Offer vs Churn
+Offer B is a near-perfect churn shield at 2.3%. No-offer customers churn at 53% — the worst cohort.
+
+![Offer vs Churn](docs/images/eda_offer_churn.png)
+
+#### Payment method vs Churn
+Electronic check users churn at 45%. Auto-pay methods (bank transfer, credit card) are consistently below 17%.
+
+![Payment Method vs Churn](docs/images/eda_payment_method_churn.png)
+
+#### Internet type vs Churn
+Fiber Optic has the highest churn rate at ~42%, while customers without internet service barely churn at all.
+
+![Internet Type vs Churn](docs/images/eda_internet_type_churn.png)
+
+#### Satisfaction score vs Churn
+Strong monotonic relationship: score 1 is almost entirely churners, score 5 is almost entirely retained.
+
+![Satisfaction Score vs Churn](docs/images/eda_satisfaction_score_churn.png)
+
+#### Senior citizen vs Churn
+Senior citizens churn at 41.7% versus 23.7% for the broader customer base — a significant demographic risk.
+
+![Senior Citizen vs Churn](docs/images/eda_senior_citizen_churn.png)
+
+#### Correlation heatmap (numeric features)
+Tenure, Total Charges, and Total Revenue are highly correlated — confirming long-tenure customers accumulate more value and churn less.
+
+![Correlation Heatmap](docs/images/eda_correlation_heatmap.png)
+
+---
+
+## Model selection
+
+| Model | Accuracy | ROC-AUC | F1 (Churn) |
+|---|---|---|---|
+| Logistic Regression | 80.2% | 0.841 | 0.591 |
+| Decision Tree | 78.4% | 0.771 | 0.572 |
+| **Random Forest** | **85.1%** | **0.893** | **0.648** |
+| Gradient Boosting | 84.3% | 0.887 | 0.637 |
+| XGBoost | 84.7% | 0.891 | 0.641 |
+
+Random Forest was chosen for its best balance of accuracy, ROC-AUC, and interpretability.
+
+### Model comparison
+
+![Model Comparison](docs/images/model_comparison.png)
+
+### ROC-AUC curves
+
+Random Forest (solid green) leads all models with AUC = 0.893. The gap over Gradient Boosting and XGBoost is small, but Random Forest has lower variance across folds and better interpretability via Gini importance.
+
+![ROC-AUC Curves](docs/images/model_roc_auc.png)
+
+### Feature importances
+
+Gini importance aggregated across all trees. Tenure, Monthly Charge, and Contract together account for nearly half the signal.
+
+![Feature Importances](docs/images/model_feature_importance.png)
+
+### Top-10 features (Gini importance)
+
+| Rank | Feature | Importance |
+|---|---|---|
+| 1 | Tenure in Months | 18.7% |
+| 2 | Monthly Charge | 16.3% |
+| 3 | Contract | 14.2% |
+| 4 | Avg Monthly GB Download | 9.8% |
+| 5 | Internet Type | 9.1% |
+| 6 | Satisfaction Score | 7.9% |
+| 7 | Offer | 6.6% |
+| 8 | Payment Method | 5.1% |
+| 9 | Online Backup | 4.4% |
+| 10 | Streaming TV | 3.9% |
+
+---
+
+## Architecture
+
+```
+customer-churn-prediction/
+|
++-- app/
+|   +-- main.py              # App factory + lifespan
+|   +-- schemas.py           # Pydantic I/O contracts
+|   +-- routes/
+|   |   +-- web.py           # HTML form routes
+|   |   +-- api.py           # JSON API routes
+|   |   +-- eda.py           # EDA dashboard + data endpoint
+|   +-- services/
+|       +-- predictor.py     # Model load and inference
+|
++-- models/
+|   +-- best_model_pipeline.pkl
+|   +-- inspect_model.py
+|
++-- notebooks/
+|   +-- EDA_of_Customer_Churn_Prediction.ipynb
+|   +-- ModelSelection.ipynb
+|
++-- tests/                   # 53 tests
+|   +-- conftest.py
+|   +-- test_predictor.py
+|   +-- test_schemas.py
+|   +-- test_api_routes.py
+|   +-- test_web_routes.py
+|
++-- static/
+|   +-- css/main.css
+|   +-- css/eda.css
+|   +-- js/main.js
+|   +-- js/eda.js
+|
++-- templates/
+|   +-- index.html
+|   +-- eda.html
+|
++-- docs/
+|   +-- DEPLOY_GUIDE.md
+|   +-- images/              # EDA + model plots used in this README
+|
++-- .github/workflows/ci.yml
++-- Dockerfile
++-- docker-compose.yml
++-- render.yaml
++-- requirements.txt
+```
+
+### Layered design
+
+```
+Transport layer   (FastAPI routes)     HTTP, form parsing, serialisation
+Schema layer      (Pydantic)           Input validation, output contracts
+Service layer     (predictor.py)       Single boundary to sklearn/joblib
+Model artifact    (.pkl pipeline)      scikit-learn Pipeline (immutable)
+```
+
+Each layer is independently testable. Tests mock only at layer boundaries.
+
+### Request flow
+
+```
+Browser / API client
+    |
+    v
+FastAPI (app/main.py)
+    |
+    +-- GET /             web.py -> Jinja2 -> index.html
+    +-- POST /predict     web.py -> predictor.predict() -> Jinja2
+    +-- POST /api/predict api.py -> predictor.predict() -> JSON
+    +-- GET /api/health   api.py -> JSON
+    +-- GET /eda          eda.py -> Jinja2 -> eda.html
+    +-- GET /eda/data     eda.py -> pre-computed stats -> JSON
+                                        |
+                                        v
+                                 Chart.js (browser)
+```
+
+---
+
+## Quick start
+
+```bash
+git clone https://github.com/mohmmad-akeeb/customer-churn-prediction.git
+cd customer-churn-prediction
+
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+python run.py
+```
+
+Open `http://localhost:8000` for the prediction form.
+Open `http://localhost:8000/eda` for the analytics dashboard.
+Open `http://localhost:8000/docs` for the API docs.
+
+### Docker
+
+```bash
+docker compose up
+```
+
+---
+
+## Running tests
+
+```bash
+pip install pytest httpx
+pytest tests/ -v
+```
+
+Expected: `53 passed`
+
+---
+
+## CI/CD pipeline
+
+```
+push / PR
+    |
+    v
+lint        ruff check and format check
+    |
+    v
+test        pytest on Python 3.11 and 3.12 in parallel
+    |
+    v
+build       Docker image build
+    |
+    v
+deploy      POST to Render deploy hook  (main branch only)
+```
+
+To enable auto-deploy: add `RENDER_DEPLOY_HOOK_URL` to GitHub Secrets and `RENDER_APP_URL` to GitHub Variables.
+
+---
+
+## API reference
+
+`POST /api/predict`
+
+```json
+{
+  "tenure_in_months": 6,
+  "monthly_charge": 95.50,
+  "contract": "Month-to-Month",
+  "internet_type": "Fiber Optic",
+  "satisfaction_score": 2,
+  "senior_citizen": "No",
+  "under_30": "Yes",
+  "dependents": "No",
+  "referred_a_friend": "No",
+  "paperless_billing": "Yes",
+  "premium_tech_support": "No",
+  "unlimited_data": "Yes",
+  "multiple_lines": "No",
+  "online_backup": "No",
+  "device_protection_plan": "No",
+  "streaming_tv": "Yes",
+  "streaming_movies": "Yes",
+  "streaming_music": "No",
+  "avg_monthly_gb_download": 45.0,
+  "payment_method": "Electronic Check",
+  "offer": "None"
+}
+```
+
+Response:
+
+```json
+{
+  "prediction": "WILL CHURN",
+  "confidence": 0.873,
+  "probabilities": { "No": 0.127, "Yes": 0.873 }
+}
+```
+
+`GET /api/health` — returns `{"status": "healthy", "model_loaded": true}`
+
+`GET /eda/data` — returns the full pre-computed EDA statistics used by the dashboard.
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | FastAPI 0.104+ |
+| ML | scikit-learn 1.5+, Random Forest |
+| Server | Uvicorn |
+| Templates | Jinja2 |
+| Charts | Chart.js 4.4 |
+| Testing | pytest, httpx |
+| Linting | ruff |
+| CI/CD | GitHub Actions |
+| Container | Docker (python:3.11-slim) |
+| Deployment | Render.com |
+
+---
+
+## Deployment
+
+See [docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) for the full step-by-step guide covering local setup, GitHub, Render.com, and Docker.
+
+---
+
+## License
+
+MIT
+
+## Author
+
+Mohmmad Akeeb — [github.com/mohmmad-akeeb](https://github.com/mohmmad-akeeb)

@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """
-Simple script to run the FastAPI Customer Churn Prediction app
+Entry point — start the Customer Churn Prediction app locally.
+
+Usage:
+    python run.py
 """
 import uvicorn
 
 if __name__ == "__main__":
-    print("🚀 Starting Customer Churn Prediction API...")
-    print("📊 Web Interface: http://localhost:8000")
-    print("📖 API Docs: http://localhost:8000/docs")
-    print("🔍 Health Check: http://localhost:8000/health")
-    print("\nPress Ctrl+C to stop the server")
-    
+    print("Starting Customer Churn Prediction API...")
+    print("Web Interface : http://localhost:8000")
+    print("API Docs      : http://localhost:8000/docs")
+    print("Health Check  : http://localhost:8000/api/health")
+    print("\nPress Ctrl+C to stop.\n")
+
     uvicorn.run(
-        "main:app",
+        "app.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Auto-reload on code changes
-        log_level="info"
+        reload=True,
+        log_level="info",
     )
