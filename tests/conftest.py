@@ -9,6 +9,7 @@ Architecture note (LLD):
     zero dependency on the ~2 MB .pkl file and on scikit-learn.
   - All fixtures are function-scoped (default) to ensure test isolation.
 """
+
 from unittest.mock import MagicMock, patch
 
 import pytest

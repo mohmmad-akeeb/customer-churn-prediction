@@ -1,6 +1,7 @@
 """
 JSON API routes -  programmatic access to the prediction model.
 """
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas import CustomerData, PredictionResponse

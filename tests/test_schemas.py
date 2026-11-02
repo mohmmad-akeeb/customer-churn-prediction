@@ -4,6 +4,7 @@ Unit tests for Pydantic schemas (app.schemas)
 LLD contract: schemas form the public API contract. These tests pin the
 accepted types and field names so breaking changes surface immediately.
 """
+
 import pytest
 from pydantic import ValidationError
 
@@ -25,8 +26,9 @@ class TestCustomerDataSchema:
         assert isinstance(customer.satisfaction_score, int)
 
     def test_missing_field_raises_validation_error(self):
-        incomplete = {k: v for k, v in SAMPLE_CUSTOMER_PAYLOAD.items()
-                      if k != "monthly_charge"}
+        incomplete = {
+            k: v for k, v in SAMPLE_CUSTOMER_PAYLOAD.items() if k != "monthly_charge"
+        }
         with pytest.raises(ValidationError):
             CustomerData(**incomplete)
 

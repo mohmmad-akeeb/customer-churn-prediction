@@ -11,6 +11,7 @@ FastAPI layer and scikit-learn. Tests here verify:
      'Yes'/'No' and 0/1 label conventions.
   5. predict() raises RuntimeError when the model is not loaded.
 """
+
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -20,6 +21,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_mock_model(classes, probas):
     """Build a minimal sklearn-compatible mock pipeline."""
@@ -33,6 +35,7 @@ def _make_mock_model(classes, probas):
 # ---------------------------------------------------------------------------
 # load_model / is_loaded
 # ---------------------------------------------------------------------------
+
 
 class TestLoadModel:
     def test_load_model_success(self, tmp_path):
@@ -76,6 +79,7 @@ class TestLoadModel:
 # ---------------------------------------------------------------------------
 # predict() -  happy paths
 # ---------------------------------------------------------------------------
+
 
 class TestPredict:
     """Tests use direct module access to avoid HTTP overhead."""
@@ -150,8 +154,11 @@ class TestPredict:
     def test_result_keys(self):
         result = self._run(classes=["No", "Yes"], probas=[0.40, 0.60])
         required = {
-            "prediction", "confidence", "churn_probability",
-            "no_churn_probability", "status",
+            "prediction",
+            "confidence",
+            "churn_probability",
+            "no_churn_probability",
+            "status",
         }
         assert required.issubset(result.keys())
 
@@ -159,6 +166,7 @@ class TestPredict:
 # ---------------------------------------------------------------------------
 # predict() -  error path
 # ---------------------------------------------------------------------------
+
 
 class TestPredictErrors:
     def test_raises_when_model_not_loaded(self):

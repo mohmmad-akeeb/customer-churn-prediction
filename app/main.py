@@ -1,6 +1,7 @@
 """
 FastAPI application factory.
 """
+
 import os
 from contextlib import asynccontextmanager
 

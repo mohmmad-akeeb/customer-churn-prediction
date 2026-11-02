@@ -6,10 +6,12 @@ prediction form. Tests verify HTTP contracts and rendered content
 without asserting on exact HTML structure (fragile), focusing instead
 on status codes, presence of key strings, and error handling.
 """
+
 from tests.conftest import NO_CHURN_PREDICTION_RESULT
 
 
 # ── GET / ───────────────────────────────────────────────────────────────────
+
 
 class TestHomePage:
     def test_home_returns_200(self, client):
@@ -35,30 +37,31 @@ class TestHomePage:
 
 # ── POST /predict ────────────────────────────────────────────────────────────
 
+
 class TestPredictForm:
     # Form payloads use HTTP form encoding (not JSON)
     FORM_PAYLOAD = {
-        "senior_citizen":         "Yes",
-        "under_30":               "",
-        "dependents":             "",
-        "referred_a_friend":      "",
-        "paperless_billing":      "Yes",
-        "premium_tech_support":   "",
-        "unlimited_data":         "Yes",
-        "multiple_lines":         "",
-        "online_backup":          "",
+        "senior_citizen": "Yes",
+        "under_30": "",
+        "dependents": "",
+        "referred_a_friend": "",
+        "paperless_billing": "Yes",
+        "premium_tech_support": "",
+        "unlimited_data": "Yes",
+        "multiple_lines": "",
+        "online_backup": "",
         "device_protection_plan": "",
-        "streaming_tv":           "Yes",
-        "streaming_movies":       "Yes",
-        "streaming_music":        "",
-        "tenure_in_months":       "6",
-        "avg_monthly_gb_download":"45",
-        "monthly_charge":         "95.5",
-        "contract":               "Month-to-Month",
-        "payment_method":         "Electronic Check",
-        "offer":                  "None",
-        "internet_type":          "Fiber Optic",
-        "satisfaction_score":     "2",
+        "streaming_tv": "Yes",
+        "streaming_movies": "Yes",
+        "streaming_music": "",
+        "tenure_in_months": "6",
+        "avg_monthly_gb_download": "45",
+        "monthly_charge": "95.5",
+        "contract": "Month-to-Month",
+        "payment_method": "Electronic Check",
+        "offer": "None",
+        "internet_type": "Fiber Optic",
+        "satisfaction_score": "2",
     }
 
     def test_predict_form_returns_200(self, client):
@@ -81,6 +84,7 @@ class TestPredictForm:
 
 
 # ── EDA dashboard ────────────────────────────────────────────────────────────
+
 
 class TestEdaDashboard:
     def test_eda_page_returns_200(self, client):
@@ -106,9 +110,15 @@ class TestEdaDashboard:
     def test_eda_data_has_required_keys(self, client):
         data = client.get("/eda/data").json()
         expected_keys = {
-            "churn_overview", "churn_by_contract", "churn_by_internet",
-            "churn_by_payment", "tenure_distribution", "monthly_charge_bands",
-            "feature_importance", "model_comparison", "offer_churn",
+            "churn_overview",
+            "churn_by_contract",
+            "churn_by_internet",
+            "churn_by_payment",
+            "tenure_distribution",
+            "monthly_charge_bands",
+            "feature_importance",
+            "model_comparison",
+            "offer_churn",
             "senior_under30",
         }
         assert expected_keys.issubset(data.keys())

@@ -12,12 +12,14 @@ Test boundaries:
 
 The predictor is stubbed via conftest.mock_predictor -  no .pkl file required.
 """
+
 from tests.conftest import SAMPLE_CUSTOMER_PAYLOAD, NO_CHURN_PREDICTION_RESULT
 
 
 # ---------------------------------------------------------------------------
 # Health endpoint
 # ---------------------------------------------------------------------------
+
 
 class TestHealthEndpoint:
     def test_health_returns_200(self, client):
@@ -41,6 +43,7 @@ class TestHealthEndpoint:
 # ---------------------------------------------------------------------------
 # POST /api/predict -  happy path
 # ---------------------------------------------------------------------------
+
 
 class TestPredictEndpoint:
     def test_predict_returns_200(self, client):
@@ -77,10 +80,12 @@ class TestPredictEndpoint:
 # POST /api/predict -  validation errors
 # ---------------------------------------------------------------------------
 
+
 class TestPredictValidation:
     def test_missing_required_field_returns_422(self, client):
-        payload = {k: v for k, v in SAMPLE_CUSTOMER_PAYLOAD.items()
-                   if k != "tenure_in_months"}
+        payload = {
+            k: v for k, v in SAMPLE_CUSTOMER_PAYLOAD.items() if k != "tenure_in_months"
+        }
         resp = client.post("/api/predict", json=payload)
         assert resp.status_code == 422
 
@@ -102,6 +107,7 @@ class TestPredictValidation:
 # ---------------------------------------------------------------------------
 # POST /api/predict -  model unavailable
 # ---------------------------------------------------------------------------
+
 
 class TestPredictModelUnavailable:
     def test_returns_503_when_model_not_loaded(self, client_no_model):

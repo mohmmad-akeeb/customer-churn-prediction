@@ -12,9 +12,13 @@ The system Python used by pytest runs Starlette 1.10 (new API).
 
 `tpl()` normalises the call so both versions work.
 """
+
 import starlette
 
-_STARLETTE_NEW_API = tuple(int(x) for x in starlette.__version__.split(".")[:2]) >= (0, 36)
+_STARLETTE_NEW_API = tuple(int(x) for x in starlette.__version__.split(".")[:2]) >= (
+    0,
+    36,
+)
 
 
 def tpl(templates, name: str, request, context: dict | None = None):

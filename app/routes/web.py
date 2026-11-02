@@ -1,6 +1,7 @@
 """
 Web (HTML) routes - serves the prediction form and handles form submissions.
 """
+
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -17,12 +18,27 @@ router = APIRouter()
 
 
 def _build_input(
-    senior_citizen, under_30, dependents, referred_a_friend,
-    paperless_billing, premium_tech_support, unlimited_data,
-    multiple_lines, online_backup, device_protection_plan,
-    streaming_tv, streaming_movies, streaming_music,
-    tenure_in_months, avg_monthly_gb_download, monthly_charge,
-    contract, payment_method, offer, internet_type, satisfaction_score,
+    senior_citizen,
+    under_30,
+    dependents,
+    referred_a_friend,
+    paperless_billing,
+    premium_tech_support,
+    unlimited_data,
+    multiple_lines,
+    online_backup,
+    device_protection_plan,
+    streaming_tv,
+    streaming_movies,
+    streaming_music,
+    tenure_in_months,
+    avg_monthly_gb_download,
+    monthly_charge,
+    contract,
+    payment_method,
+    offer,
+    internet_type,
+    satisfaction_score,
 ) -> dict:
     """Convert raw form values into the dict expected by the model pipeline."""
     return {
@@ -83,23 +99,48 @@ async def predict_form(
 ):
     """Handle form submission and return prediction result."""
     if not predictor.is_loaded():
-        return tpl(templates, "index.html", request, {
-            "error": "Model not loaded. Please check the model file.",
-        })
+        return tpl(
+            templates,
+            "index.html",
+            request,
+            {
+                "error": "Model not loaded. Please check the model file.",
+            },
+        )
 
     try:
         input_data = _build_input(
-            senior_citizen, under_30, dependents, referred_a_friend,
-            paperless_billing, premium_tech_support, unlimited_data,
-            multiple_lines, online_backup, device_protection_plan,
-            streaming_tv, streaming_movies, streaming_music,
-            tenure_in_months, avg_monthly_gb_download, monthly_charge,
-            contract, payment_method, offer, internet_type, satisfaction_score,
+            senior_citizen,
+            under_30,
+            dependents,
+            referred_a_friend,
+            paperless_billing,
+            premium_tech_support,
+            unlimited_data,
+            multiple_lines,
+            online_backup,
+            device_protection_plan,
+            streaming_tv,
+            streaming_movies,
+            streaming_music,
+            tenure_in_months,
+            avg_monthly_gb_download,
+            monthly_charge,
+            contract,
+            payment_method,
+            offer,
+            internet_type,
+            satisfaction_score,
         )
         result = predictor.predict(input_data)
         return tpl(templates, "index.html", request, {"result": result})
 
     except Exception as exc:
-        return tpl(templates, "index.html", request, {
-            "error": f"Prediction error: {str(exc)}",
-        })
+        return tpl(
+            templates,
+            "index.html",
+            request,
+            {
+                "error": f"Prediction error: {str(exc)}",
+            },
+        )
