@@ -10,9 +10,13 @@
 
 A production-ready web application that predicts whether a telecom customer will churn, backed by a Random Forest classifier trained on the IBM Telco dataset (7,043 customers, 21 features). Ships with an interactive EDA dashboard that visualises the key findings from the exploratory analysis.
 
-**Live demo:** [churnsight.onrender.com](https://churnsight.onrender.com)
+**Live demo:** [customer-churn-prediction-orpo.onrender.com](https://customer-churn-prediction-orpo.onrender.com)
 
-![App Screenshot](app_screenshot.png)
+### Prediction form
+![Prediction Dashboard](docs/images/screenshot_prediction.png)
+
+### EDA analytics dashboard
+![EDA Dashboard](docs/images/screenshot_eda_dashboard.png)
 
 ---
 
@@ -288,12 +292,9 @@ test        pytest on Python 3.11 and 3.12 in parallel
     |
     v
 build       Docker image build
-    |
-    v
-deploy      POST to Render deploy hook  (main branch only)
 ```
 
-To enable auto-deploy: add `RENDER_DEPLOY_HOOK_URL` to GitHub Secrets and `RENDER_APP_URL` to GitHub Variables.
+Every push to `main` triggers Render to rebuild the Docker image and redeploy automatically.
 
 ---
 
