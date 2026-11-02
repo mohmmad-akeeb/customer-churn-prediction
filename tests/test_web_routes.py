@@ -6,7 +6,6 @@ prediction form. Tests verify HTTP contracts and rendered content
 without asserting on exact HTML structure (fragile), focusing instead
 on status codes, presence of key strings, and error handling.
 """
-import pytest
 from tests.conftest import NO_CHURN_PREDICTION_RESULT
 
 

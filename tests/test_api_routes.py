@@ -12,7 +12,6 @@ Test boundaries:
 
 The predictor is stubbed via conftest.mock_predictor -  no .pkl file required.
 """
-import pytest
 from tests.conftest import SAMPLE_CUSTOMER_PAYLOAD, NO_CHURN_PREDICTION_RESULT
 
 
