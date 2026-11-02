@@ -13,15 +13,11 @@ services:
       - DEBUG=False
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    volumes:
-      # Optional: Mount for development
-      # - ./templates:/app/templates:ro
-      # - ./best_model_pipeline.pkl:/app/best_model_pipeline.pkl:ro
     networks:
       - churn-network
 

@@ -3,5 +3,7 @@ services:
     name: customer-churn-prediction
     env: python
     pythonVersion: "3.11.9"
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health

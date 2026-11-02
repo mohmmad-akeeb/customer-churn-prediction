@@ -79,7 +79,7 @@ git push -u origin main
 1. Go to https://render.com and sign in with GitHub
 2. Click **New** and select **Web Service**
 3. Select your repository
-4. Fill in the settings:
+4. Render will detect `render.yaml` automatically and pre-fill the settings:
 
 | Field | Value |
 |---|---|
@@ -89,6 +89,7 @@ git push -u origin main
 | Branch | main |
 | Build Command | `pip install -r requirements.txt` |
 | Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+| Plan | Free |
 
 5. Click **Create Web Service**
 6. Render builds and deploys automatically. Takes 2-4 minutes on first deploy.
@@ -102,14 +103,6 @@ curl https://your-app-name.onrender.com/api/health
 # Expected: {"status":"healthy","model_loaded":true}
 ```
 
-### Environment variables (optional)
-
-On the Render dashboard go to your service, then **Environment**, and add:
-
-```
-PYTHON_VERSION=3.11.9
-```
-
 ### Auto-deploy on push
 
 Render auto-deploys whenever you push to `main`. You can disable this in Dashboard > Settings > Auto-Deploy.
@@ -118,9 +111,18 @@ Render auto-deploys whenever you push to `main`. You can disable this in Dashboa
 
 ## 4. Enable CI/CD with GitHub Actions
 
-The workflow file is at `.github/workflows/ci.yml`. It runs lint, tests, Docker build, and deploy automatically.
+The workflow file is at `.github/workflows/ci.yml`. It runs lint, tests, a Docker build check, and triggers a Render deploy — all automatically.
 
-### What you need to add
+### What the pipeline does
+
+| Job | Trigger | What it does |
+|---|---|---|
+| lint | every push / PR | Runs `ruff check` and `ruff format --check` on `app/` and `tests/` |
+| test | after lint passes | Runs the full pytest suite on Python 3.11 and 3.12 |
+| build | after tests pass | Builds the Docker image (no push) to catch Dockerfile errors early |
+| deploy | push to `main` only | Triggers a Render deploy hook to kick off a production deploy |
+
+### What you need to configure
 
 In your GitHub repo go to **Settings > Secrets and variables > Actions**.
 
@@ -136,50 +138,63 @@ Add these variables:
 |---|---|
 | `RENDER_APP_URL` | Your Render app URL, e.g. `https://customer-churn-prediction.onrender.com` |
 
-Once set, every push to `main` will:
-1. Lint the code with ruff
-2. Run the full test suite on Python 3.11 and 3.12
-3. Build the Docker image
-4. Trigger a deploy to Render
+Once configured, every push to `main` will lint, test, build, and deploy. Pull requests only trigger lint and tests — no deploy.
 
-Pull requests trigger lint and tests only (no deploy).
+> **Note:** Render also auto-deploys on push independently of GitHub Actions. The CI pipeline adds the safety net of lint and tests running *before* the deploy is triggered.
 
 ---
 
 ## 5. Run with Docker
 
-### Using Docker Compose (easiest)
+### Using Docker Compose (recommended for local testing)
 
 ```bash
-docker compose up
+# Build and start (foreground)
+docker compose up --build
+
+# Build and start (background)
+docker compose up --build -d
+
+# Stop
+docker compose down
 ```
 
 The app will be available at http://localhost:8000.
 
-To stop it:
+Check container status:
 
 ```bash
-docker compose down
+docker ps
+```
+
+You should see `0.0.0.0:8000->8000/tcp` in the PORTS column.
+
+Verify it's healthy:
+
+```bash
+curl http://localhost:8000/api/health
+# Expected: {"status":"healthy","model_loaded":true}
 ```
 
 ### Using Docker CLI
 
 ```bash
 # Build the image
-docker build -t churnsight:latest .
+docker build -t customer-churn-prediction:latest .
 
 # Run a container
 docker run -d \
-  --name churnsight \
+  --name customer-churn-prediction \
   -p 8000:8000 \
-  churnsight:latest
+  -e PORT=8000 \
+  customer-churn-prediction:latest
 
 # Check logs
-docker logs -f churnsight
+docker logs -f customer-churn-prediction
 
-# Stop
-docker stop churnsight
-docker rm churnsight
+# Stop and remove
+docker stop customer-churn-prediction
+docker rm customer-churn-prediction
 ```
 
 ### Build for production (no cache, multi-arch)
@@ -187,7 +202,7 @@ docker rm churnsight
 ```bash
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t churnsight:v1.0.0 \
+  -t customer-churn-prediction:v1.0.0 \
   --no-cache .
 ```
 
@@ -200,12 +215,12 @@ docker buildx build \
 docker login
 
 # Tag
-docker tag churnsight:latest YOUR_DOCKERHUB_USERNAME/churnsight:latest
-docker tag churnsight:latest YOUR_DOCKERHUB_USERNAME/churnsight:v1.0.0
+docker tag customer-churn-prediction:latest YOUR_DOCKERHUB_USERNAME/customer-churn-prediction:latest
+docker tag customer-churn-prediction:latest YOUR_DOCKERHUB_USERNAME/customer-churn-prediction:v1.0.0
 
 # Push
-docker push YOUR_DOCKERHUB_USERNAME/churnsight:latest
-docker push YOUR_DOCKERHUB_USERNAME/churnsight:v1.0.0
+docker push YOUR_DOCKERHUB_USERNAME/customer-churn-prediction:latest
+docker push YOUR_DOCKERHUB_USERNAME/customer-churn-prediction:v1.0.0
 ```
 
 ---
@@ -231,9 +246,9 @@ fly deploy
 ### Google Cloud Run
 
 ```bash
-gcloud builds submit --tag gcr.io/PROJECT_ID/churnsight
-gcloud run deploy churnsight \
-  --image gcr.io/PROJECT_ID/churnsight \
+gcloud builds submit --tag gcr.io/PROJECT_ID/customer-churn-prediction
+gcloud run deploy customer-churn-prediction \
+  --image gcr.io/PROJECT_ID/customer-churn-prediction \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated
@@ -339,8 +354,18 @@ If missing, re-run the model training notebook: `notebooks/ModelSelection.ipynb`
 # Find what's using port 8000
 lsof -i :8000
 
-# Kill it
+# Kill it (replace PID with the number shown)
 kill -9 <PID>
+```
+
+**Container starts but port not reachable**
+
+Make sure you ran `docker compose down` before `docker compose up` — a stale container from an old config can hold the port mapping without publishing it correctly.
+
+```bash
+docker compose down
+docker compose up -d
+docker ps   # should show 0.0.0.0:8000->8000/tcp in PORTS column
 ```
 
 **Dependency conflicts**
@@ -353,12 +378,13 @@ pip install -r requirements.txt --force-reinstall
 
 ```bash
 docker run -d \
-  --name churnsight \
+  --name customer-churn-prediction \
   -p 8000:8000 \
+  -e PORT=8000 \
   --memory="512m" \
-  churnsight:latest
+  customer-churn-prediction:latest
 ```
 
 **Render deploy stuck**
 
-Check the build logs in the Render dashboard. The most common cause is a dependency failing to install. Check that `requirements.txt` has pinned versions.
+Check the build logs in the Render dashboard. The most common cause is a dependency failing to install. Confirm that `requirements.txt` has pinned versions and that the build command matches: `pip install -r requirements.txt`.
